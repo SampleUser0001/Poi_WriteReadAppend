@@ -23,7 +23,7 @@ import lombok.Data;
 public class ReadController {
     private Logger logger = LogManager.getLogger();
     
-    private Workbook workbook;
+    private XSSFWorkbook workbook;
     private Sheet sheet;
 
     private String filepath;
@@ -63,8 +63,21 @@ public class ReadController {
 
     }
 
-    public void getProperty() {
-        // TODO
+    /**
+     * 作成者を取得する。
+     */
+    public String getCreator() {
+        return this.workbook.getProperties().getCoreProperties().getCreator();
+    }
+    
+    /**
+     * アプリケーション名を取得する
+     */
+    public String getApplicationName() {
+        return this.workbook.getProperties()
+                            .getExtendedProperties()
+                            .getUnderlyingProperties()
+                            .getApplication();
     }
 
     public void getCustomProperty() {
