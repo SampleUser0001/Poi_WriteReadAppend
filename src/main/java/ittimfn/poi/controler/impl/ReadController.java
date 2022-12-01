@@ -73,7 +73,7 @@ public class ReadController {
     /**
      * アプリケーション名を取得する
      */
-    public String getApplicationName() {
+    public String getProgramName() {
         return this.workbook.getProperties()
                             .getExtendedProperties()
                             .getUnderlyingProperties()

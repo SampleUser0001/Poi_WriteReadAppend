@@ -41,5 +41,16 @@ public class ReadControllerTest {
         assertThat(creator, is(equalTo("hogehoge")));
         
     }
+
+    @Test
+    public void getProgramNameTest() throws IOException {
+        String filepath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "Poi_properties_read_test.xlsx").toString();
+        this.controller.open(filepath);
+
+        String programName = this.controller.getProgramName();
+        
+        assertThat(programName, is(equalTo("Microsoft Excel")));
+        
+    }
     
 }
