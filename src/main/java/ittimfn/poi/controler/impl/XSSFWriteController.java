@@ -10,17 +10,17 @@ import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class WriteController {
+public class XSSFWriteController {
     private Logger logger = LogManager.getLogger();
     
-    private Workbook workbook;
+    private XSSFWorkbook workbook;
     private String sheetName;
 
     private String filepath;
 
-    public WriteController(Workbook workbook, String filepath, String sheetName) {
+    public XSSFWriteController(XSSFWorkbook workbook, String filepath, String sheetName) {
         this.workbook = workbook;
         logger.info("workbook : {}", this.workbook.getClass());
 
@@ -55,13 +55,12 @@ public class WriteController {
             throw e;
         }
     }
-
-    public void setProperties() {
-        // TODO
-    }
-
-    public void setCustomProperties() {
-        // TODO
+    
+    /**
+     * workbookに作成者を書き込む
+     */
+    public void setCreator(String creator) {
+        this.workbook.getProperties().getCoreProperties().setCreator(creator);
     }
 
 }
