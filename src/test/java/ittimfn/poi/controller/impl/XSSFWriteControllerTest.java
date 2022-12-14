@@ -27,6 +27,8 @@ public class XSSFWriteControllerTest {
     private Logger logger = LogManager.getLogger();
 
     private XSSFWriteController controller;
+    private SXSSFWriteController sxssfController;
+
     private ReadController reader;
 
     private static final String EXPORT_HOME
@@ -69,7 +71,7 @@ public class XSSFWriteControllerTest {
      * XSSFWorkbookインスタンスを使って、作成者を書き込みできること。
      */
     @Test
-    public void writeCreatorBySXSSWorkbook()  throws FileNotFoundException, IOException {
+    public void writeCreatorBySXSSWorkbook() throws FileNotFoundException, IOException {
         String filepath = Paths.get(EXPORT_HOME, "writeCreatorBySXSSFWorkbook.xlsx").toString();
         XSSFWorkbook workbook = new XSSFWorkbook();
         String sheetName = "test";
@@ -93,7 +95,7 @@ public class XSSFWriteControllerTest {
      * XSSFWorkbookインスタンスを使って、プログラム名を書き込みできること。
      */
     @Test
-    public void writeApplicationNameBySXSSWorkbook()  throws FileNotFoundException, IOException {
+    public void writeApplicationNameBySXSSWorkbook() throws FileNotFoundException, IOException {
         String filepath = Paths.get(EXPORT_HOME, "writeApplicationNameBySXSSFWorkbook.xlsx").toString();
         XSSFWorkbook workbook = new XSSFWorkbook();
         String sheetName = "test";
@@ -113,13 +115,11 @@ public class XSSFWriteControllerTest {
         }
     }
 
-    private SXSSFWriteController sxssfController;
-    private XSSFWriteController xssfController;
     /**
      * SXSSFでセルに書き込み、XSSFでプロパティに書き込む。
      */
-//    @Test
-    public void bothUseTest() {
+    @Test
+    public void bothUseTest() throws FileNotFoundException, IOException {
         String filepath = Paths.get(EXPORT_HOME, "bothWorkbook.xlsx").toString();
         String sheetName = "test";
 
@@ -134,9 +134,10 @@ public class XSSFWriteControllerTest {
 
         try {
             // プロパティ書き込み
-            this.xssfController = new XSSFWriteController(xssfWorkbook, filepath, sheetName);
-            this.xssfController.setCreator(CUSTOM_CREATOR);
-            this.xssfController.write(new ArrayList<String>());
+            this.controller = new XSSFWriteController(xssfWorkbook, filepath, sheetName);
+            this.controller.setCreator(CUSTOM_CREATOR);
+            this.controller.setApplicationName(APPLICATION_NAME);
+            this.controller.write(new ArrayList<String>());
 
             // セルに書き込み
             this.sxssfController = new SXSSFWriteController(sxssfWorkbook, filepath, sheetName);
