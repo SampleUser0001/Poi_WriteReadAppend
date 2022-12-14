@@ -15,11 +15,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ittimfn.poi.controler.impl.ReadController;
 import ittimfn.poi.controler.impl.XSSFWriteController;
+import ittimfn.poi.controler.impl.SXSSFWriteController;
 
 public class XSSFWriteControllerTest {
     private Logger logger = LogManager.getLogger();
@@ -110,4 +112,54 @@ public class XSSFWriteControllerTest {
             throw e;
         }
     }
+
+    private SXSSFWriteController sxssfController;
+    private XSSFWriteController xssfController;
+    /**
+     * SXSSFでセルに書き込み、XSSFでプロパティに書き込む。
+     */
+//    @Test
+    public void bothUseTest() {
+        String filepath = Paths.get(EXPORT_HOME, "bothWorkbook.xlsx").toString();
+        String sheetName = "test";
+
+        List<String> list = Arrays.asList("hoge","piyo");
+        List<String> result;
+
+        final String CUSTOM_CREATOR = "customCreator";
+        final String APPLICATION_NAME = "applicationName";
+
+        XSSFWorkbook xssfWorkbook = new XSSFWorkbook();
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook();
+
+        try {
+            // プロパティ書き込み
+            this.xssfController = new XSSFWriteController(xssfWorkbook, filepath, sheetName);
+            this.xssfController.setCreator(CUSTOM_CREATOR);
+            this.xssfController.write(new ArrayList<String>());
+
+            // セルに書き込み
+            this.sxssfController = new SXSSFWriteController(sxssfWorkbook, filepath, sheetName);
+            this.sxssfController.write(list);
+
+            // 読込
+            this.reader = new ReadController();
+            this.reader.open(filepath);
+            assertThat(this.reader.getCreator(), is(CUSTOM_CREATOR));
+            assertThat(this.reader.getApplicationName(), is(APPLICATION_NAME));
+
+            result = this.reader.read();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error(e.getStackTrace());
+            throw e;
+        }
+
+        assertThat(result.size(), is(list.size()));
+        assertThat(result.get(0), is("hoge"));
+        assertThat(result.get(1), is("piyo"));
+
+    }
+
 }
