@@ -85,6 +85,29 @@ public class XSSFWriteControllerTest {
             logger.error(e.getStackTrace());
             throw e;
         }
+    }
+    
+    /**
+     * XSSFWorkbookインスタンスを使って、プログラム名を書き込みできること。
+     */
+    @Test
+    public void writeApplicationNameBySXSSWorkbook()  throws FileNotFoundException, IOException {
+        String filepath = Paths.get(EXPORT_HOME, "writeApplicationNameBySXSSFWorkbook.xlsx").toString();
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        String sheetName = "test";
 
+        final String APPLICATION_NAME = "applicationName";
+        try {
+            this.controller = new XSSFWriteController(workbook, filepath, sheetName);
+            this.controller.setApplicationName(APPLICATION_NAME);
+            this.controller.write(new ArrayList<String>());
+
+            this.reader = new ReadController();
+            this.reader.open(filepath);
+            assertThat(this.reader.getApplicationName(), is(APPLICATION_NAME));
+        } catch (Exception e) {
+            logger.error(e.getStackTrace());
+            throw e;
+        }
     }
 }

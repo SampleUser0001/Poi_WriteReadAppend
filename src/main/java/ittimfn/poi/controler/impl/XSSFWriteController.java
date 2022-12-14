@@ -62,5 +62,16 @@ public class XSSFWriteController {
     public void setCreator(String creator) {
         this.workbook.getProperties().getCoreProperties().setCreator(creator);
     }
+    
+    /**
+     * workbookにプログラム名を書き込む
+     */
+     
+    public void setApplicationName(String applicationName) {
+        this.workbook.getProperties()
+                     .getExtendedProperties()
+                     .getUnderlyingProperties()
+                     .setApplication(applicationName);
+    }
 
 }

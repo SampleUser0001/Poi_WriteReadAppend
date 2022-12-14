@@ -56,7 +56,7 @@ public class ReadControllerTest {
         String filepath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "Poi_properties_read_test.xlsx").toString();
         this.controller.open(filepath);
 
-        String programName = this.controller.getProgramName();
+        String programName = this.controller.getApplicationName();
         
         assertThat(programName, is(equalTo("Microsoft Excel")));
         

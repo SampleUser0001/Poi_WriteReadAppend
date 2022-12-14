@@ -70,9 +70,10 @@ public class ReadController {
     }
     
     /**
-     * アプリケーション名を取得する
+     * プログラム名を取得する
+     * (Excelのプロパティ上はプログラム名、Poiの名前はApplication。)
      */
-    public String getProgramName() {
+    public String getApplicationName() {
         return this.workbook.getProperties()
                             .getExtendedProperties()
                             .getUnderlyingProperties()
