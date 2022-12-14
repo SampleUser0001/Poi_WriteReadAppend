@@ -27,6 +27,7 @@ public class ReadControllerTest {
     public void readSingleLineExcel() throws IOException {
         String filepath = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "singleLine.xlsx").toString();
         this.controller.open(filepath);
+        this.controller.openSheet();
 
         List<String> resultList = this.controller.read();
 

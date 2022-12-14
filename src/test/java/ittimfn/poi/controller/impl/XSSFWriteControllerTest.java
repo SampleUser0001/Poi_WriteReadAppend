@@ -6,18 +6,23 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
+import java.io.FileOutputStream;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+
+import java.io.FileInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 
 import ittimfn.poi.controler.impl.ReadController;
 import ittimfn.poi.controler.impl.XSSFWriteController;
@@ -33,6 +38,8 @@ public class XSSFWriteControllerTest {
 
     private static final String EXPORT_HOME
         = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "writetest").toString();
+    private static final String FOR_DOWNLOAD
+        = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "download").toString();
 
     @BeforeEach
     public void deleteExcelFile() throws IOException {
@@ -52,10 +59,15 @@ public class XSSFWriteControllerTest {
         List<String> result;
         try {
             this.controller = new XSSFWriteController(workbook, filepath, sheetName);
+            this.controller.open();
+            this.controller.createSheet();
             this.controller.write(list);
+            this.controller.writeToWorkbook();
+            this.controller.close();
 
             this.reader = new ReadController();
             this.reader.open(filepath);
+            this.reader.openSheet();
             result = this.reader.read();
         } catch (Exception e) {
             logger.error(e.getStackTrace());
@@ -79,8 +91,10 @@ public class XSSFWriteControllerTest {
         final String CUSTOM_CREATOR = "customCreator";
         try {
             this.controller = new XSSFWriteController(workbook, filepath, sheetName);
+            this.controller.open();
             this.controller.setCreator(CUSTOM_CREATOR);
-            this.controller.write(new ArrayList<String>());
+            this.controller.writeToWorkbook();
+            this.controller.close();
 
             this.reader = new ReadController();
             this.reader.open(filepath);
@@ -103,8 +117,10 @@ public class XSSFWriteControllerTest {
         final String APPLICATION_NAME = "applicationName";
         try {
             this.controller = new XSSFWriteController(workbook, filepath, sheetName);
+            this.controller.open();
             this.controller.setApplicationName(APPLICATION_NAME);
-            this.controller.write(new ArrayList<String>());
+            this.controller.writeToWorkbook();
+            this.controller.close();
 
             this.reader = new ReadController();
             this.reader.open(filepath);
@@ -120,7 +136,8 @@ public class XSSFWriteControllerTest {
      */
     @Test
     public void bothUseTest() throws FileNotFoundException, IOException {
-        String filepath = Paths.get(EXPORT_HOME, "bothWorkbook.xlsx").toString();
+        logger.info("bothUseTest start.");
+        String filepath = Paths.get(FOR_DOWNLOAD, "bothWorkbook.xlsx").toString();
         String sheetName = "test";
 
         List<String> list = Arrays.asList("hoge","piyo");
@@ -133,22 +150,31 @@ public class XSSFWriteControllerTest {
         SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook();
 
         try {
-            // プロパティ書き込み
+
             this.controller = new XSSFWriteController(xssfWorkbook, filepath, sheetName);
+            this.controller.open();
             this.controller.setCreator(CUSTOM_CREATOR);
             this.controller.setApplicationName(APPLICATION_NAME);
-            this.controller.write(new ArrayList<String>());
+            this.controller.writeToWorkbook();
+            this.controller.workbookClose();
+            this.controller.close();
 
-            // セルに書き込み
+            xssfWorkbook = new XSSFWorkbook(new FileInputStream(filepath));
+            sxssfWorkbook = new SXSSFWorkbook(xssfWorkbook);
+            
             this.sxssfController = new SXSSFWriteController(sxssfWorkbook, filepath, sheetName);
+            this.sxssfController.open();
+            this.sxssfController.createSheet();
+            ZipSecureFile.setMinInflateRatio(0.001);
             this.sxssfController.write(list);
+            this.sxssfController.writeToWorkbook();
+            this.sxssfController.workbookClose();
+            this.sxssfController.close();
 
-            // 読込
             this.reader = new ReadController();
             this.reader.open(filepath);
-            assertThat(this.reader.getCreator(), is(CUSTOM_CREATOR));
-            assertThat(this.reader.getApplicationName(), is(APPLICATION_NAME));
 
+            this.reader.openSheet();
             result = this.reader.read();
 
         } catch (Exception e) {
@@ -161,6 +187,9 @@ public class XSSFWriteControllerTest {
         assertThat(result.get(0), is("hoge"));
         assertThat(result.get(1), is("piyo"));
 
-    }
+        assertThat(this.reader.getCreator(), is(CUSTOM_CREATOR));
+        assertThat(this.reader.getApplicationName(), is(APPLICATION_NAME));
+
+   }
 
 }

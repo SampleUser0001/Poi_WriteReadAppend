@@ -34,8 +34,10 @@ public class ReadController {
 
         // ファイルOpen
         this.workbook = new XSSFWorkbook(this.filepath);
+    }
+    
+    public void openSheet() {
         this.sheet = this.workbook.getSheetAt(0);
-
         logger.info("sheet name : {}", this.sheet.getSheetName());
     }
 

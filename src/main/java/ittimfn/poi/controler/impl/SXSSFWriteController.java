@@ -1,25 +1,18 @@
 package ittimfn.poi.controler.impl;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
-public class SXSSFWriteController {
+import org.apache.poi.openxml4j.util.ZipSecureFile;
+
+import java.io.FileNotFoundException;
+
+import ittimfn.poi.controler.WriteController;
+
+public class SXSSFWriteController extends WriteController {
     private Logger logger = LogManager.getLogger();
     
-    private SXSSFWorkbook workbook;
-    private String sheetName;
-
-    private String filepath;
-
     public SXSSFWriteController(SXSSFWorkbook workbook, String filepath, String sheetName) {
         this.workbook = workbook;
         logger.info("workbook : {}", this.workbook.getClass());
@@ -30,39 +23,19 @@ public class SXSSFWriteController {
         this.sheetName = sheetName;
         logger.info("sheetName : {}", this.sheetName);
     }
-
-    public void write(List<String> list) throws FileNotFoundException, IOException {
-        try {
-            Sheet sheet = this.workbook.createSheet(this.sheetName);
-
-            for(int rowIndex = 0 ; rowIndex < list.size() ; rowIndex++) {
-                Row row = sheet.createRow(rowIndex);
-                Cell cell = row.createCell(0);
-
-                String value = list.get(rowIndex);
-                logger.info("line : {} , value : {}", rowIndex+1, value);
-                cell.setCellValue(value);
-            }
-
-            try(FileOutputStream out = new FileOutputStream(this.filepath)) {
-                this.workbook.write(out);
-                this.workbook.close();
-                out.close();
-            }
-        } catch(Exception e) {
-            logger.error(e);
-            e.printStackTrace();
-            throw e;
-        }
+    
+    public SXSSFWriteController(SXSSFWorkbook workbook, String filepath, String sheetName, boolean append) {
+        this(workbook ,filepath, sheetName);
+        
+        this.append = append;
+        logger.info("append : {}", this.append);
     }
     
-
-    public void setProperties() {
-        // TODO
-    }
-
-    public void setCustomProperties() {
-        // TODO
-    }
+    // @Override
+    // public void open() throws FileNotFoundException {
+    //     // this.baos = new ByteArrayOutputStream();
+    //     super.open();
+    //     ZipSecureFile.setMinInflateRatio(0.001);
+    // }
 
 }

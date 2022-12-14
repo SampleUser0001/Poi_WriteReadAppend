@@ -16,7 +16,7 @@
         -->
         <Property name="format1">%d{yyyy/MM/dd HH:mm:ss.SSS} [%t] %-6p %c{10} %m%n</Property>
         <Property name="logfile">./logs/excel_test.log</Property>
-        <Property name="logfile-archive">./logs/excel_test_%d{yyyy-MM-dd}.tar.gz</Property>
+        <Property name="logfile-archive">./logs/excel_test_%d{yyyy-MM-dd-HH-mm}.tar.gz</Property>
     </Properties>
     
     <Appenders>
@@ -41,11 +41,11 @@
     </Appenders>
     
     <Loggers>
-        <Root level="warn">
+        <Root level="trace">
             <AppenderRef ref="Console" />
             <AppenderRef ref="logfile001" />
         </Root>
-        <Logger name="ittimfn.tool.poi" level="trace" additivity="false">
+        <Logger name="ittimfn.poi" level="trace" additivity="false">
             <AppenderRef ref="logfile001" />
             <AppenderRef ref="Console" />
         </Logger>

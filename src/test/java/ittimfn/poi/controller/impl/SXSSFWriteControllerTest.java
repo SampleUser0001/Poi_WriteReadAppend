@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ public class SXSSFWriteControllerTest {
 
     private static final String EXPORT_HOME
         = Paths.get(System.getProperty("user.dir"), "src", "test", "resources", "writetest").toString();
+    private static final String RESOURCES
+        = Paths.get(System.getProperty("user.dir"), "src", "test", "resources").toString();
     
     @BeforeEach
     public void deleteExcelFile() throws IOException {
@@ -39,18 +43,26 @@ public class SXSSFWriteControllerTest {
      */
     @Test
     public void writeBySXSSFWorkbookTest() throws FileNotFoundException, IOException {
-        String filepath = Paths.get(EXPORT_HOME, "bySXSSFWorkbook.xlsx").toString();
-        SXSSFWorkbook workbook = new SXSSFWorkbook();
+        String filepath = Paths.get(EXPORT_HOME, "SXSSFWriteOrigin.xlsx").toString();
+
         String sheetName = "test";
         
         List<String> list = Arrays.asList("hoge","piyo");
         List<String> result;
         try {
+            SXSSFWorkbook workbook = new SXSSFWorkbook();
+
             this.controller = new SXSSFWriteController(workbook, filepath, sheetName);
+            this.controller.createSheet();
+            this.controller.open();
             this.controller.write(list);
+            this.controller.writeToWorkbook();
+            this.controller.close();
+            this.controller.workbookClose();
 
             this.reader = new ReadController();
             this.reader.open(filepath);
+            this.reader.openSheet();
             result = this.reader.read();
         } catch (Exception e) {
             logger.error(e.getStackTrace());
